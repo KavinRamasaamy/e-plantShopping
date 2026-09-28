@@ -7,27 +7,31 @@ const CartItem = ({ onContinueShopping }) => {
   const cart = useSelector(state => state.cart.items);
   const dispatch = useDispatch();
 
-  // Parse "$15" -> 15. Returns 0 if not parseable.
-  const parseCost = (cost) => {
-    if (typeof cost === 'number') return cost;
-    return parseFloat(String(cost).replace(/[^0-9.]/g, '')) || 0;
-  };
-
-  // Total amount for the entire cart
+  // Calculate total amount for all products in the cart
   const calculateTotalAmount = () => {
-    return cart
-      .reduce((sum, item) => sum + parseCost(item.cost) * item.quantity, 0)
-      .toFixed(2);
+    let total = 0;
+    cart.forEach((item) => {
+      const quantity = item.quantity;
+      const cost = parseFloat(item.cost.substring(1)); // Strip "$" and convert
+      total += cost * quantity;
+    });
+    return total.toFixed(2);
   };
 
-  // Total cost for one item type (unit cost * quantity)
+  // Calculate total cost based on quantity for an item
   const calculateTotalCost = (item) => {
-    return (parseCost(item.cost) * item.quantity).toFixed(2);
+    const cost = parseFloat(item.cost.substring(1));
+    return (cost * item.quantity).toFixed(2);
   };
 
   const handleContinueShopping = (e) => {
     e.preventDefault();
     onContinueShopping(e);
+  };
+
+  const handleCheckoutShopping = (e) => {
+    e.preventDefault();
+    alert('Functionality to be added for future reference');
   };
 
   const handleIncrement = (item) => {
@@ -38,12 +42,12 @@ const CartItem = ({ onContinueShopping }) => {
     if (item.quantity > 1) {
       dispatch(updateQuantity({ name: item.name, quantity: item.quantity - 1 }));
     } else {
-      dispatch(removeItem(item.name)); // Pass name string to match reducer
+      dispatch(removeItem(item.name));
     }
   };
 
   const handleRemove = (item) => {
-    dispatch(removeItem(item.name)); // Pass name string to match reducer
+    dispatch(removeItem(item.name));
   };
 
   return (
@@ -71,7 +75,7 @@ const CartItem = ({ onContinueShopping }) => {
       <div className="continue_shopping_btn">
         <button className="get-started-button" onClick={(e) => handleContinueShopping(e)}>Continue Shopping</button>
         <br />
-        <button className="get-started-button1">Checkout</button>
+        <button className="get-started-button1" onClick={(e) => handleCheckoutShopping(e)}>Checkout</button>
       </div>
     </div>
   );
