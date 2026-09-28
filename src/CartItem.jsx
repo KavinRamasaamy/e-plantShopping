@@ -7,20 +7,20 @@ const CartItem = ({ onContinueShopping }) => {
   const cart = useSelector(state => state.cart.items);
   const dispatch = useDispatch();
 
-  // Parse "$15" → 15. Returns 0 if not parseable.
+  // Parse "$15" -> 15. Returns 0 if not parseable.
   const parseCost = (cost) => {
     if (typeof cost === 'number') return cost;
     return parseFloat(String(cost).replace(/[^0-9.]/g, '')) || 0;
   };
 
-  // Total for the whole cart
+  // Total amount for the entire cart
   const calculateTotalAmount = () => {
     return cart
       .reduce((sum, item) => sum + parseCost(item.cost) * item.quantity, 0)
       .toFixed(2);
   };
 
-  // Total cost for one item type (unit cost × quantity)
+  // Total cost for one item type (unit cost * quantity)
   const calculateTotalCost = (item) => {
     return (parseCost(item.cost) * item.quantity).toFixed(2);
   };
@@ -38,13 +38,12 @@ const CartItem = ({ onContinueShopping }) => {
     if (item.quantity > 1) {
       dispatch(updateQuantity({ name: item.name, quantity: item.quantity - 1 }));
     } else {
-      // quantity would hit 0 → remove the item instead
-      dispatch(removeItem(item));
+      dispatch(removeItem(item.name)); // Pass name string to match reducer
     }
   };
 
   const handleRemove = (item) => {
-    dispatch(removeItem(item));
+    dispatch(removeItem(item.name)); // Pass name string to match reducer
   };
 
   return (
